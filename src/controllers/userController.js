@@ -9,23 +9,23 @@ const ACCESS_TOKEN_SECRET_SIGNATURE = process.env.ACCESS_TOKEN_SECRET_SIGNATURE;
 const REFRESH_TOKEN_SECRET_SIGNATURE = process.env.REFRESH_TOKEN_SECRET_SIGNATURE;
 
 const signup = async (req, res) => {
-  const { username, phone, password, comfirmPassword } = req.body;
+  const { username, email, password, confirmPassword } = req.body;
 
   try {
-    const existingUser = await User.findOne({ phone });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({ message: "Phone is existed" });
+      return res.status(400).json({ message: "Email is existed" });
     }
 
-    if (comfirmPassword !== password) {
+    if (confirmPassword !== password) {
       return res.status(400).json({ message: "Password is not match" });
     }
 
     const hashPassword = await bcrybt.hash(password, 10);
 
     const newUser = new User({
-      phone,
+      email,
       password: hashPassword,
       username,
     });
@@ -40,7 +40,7 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { username, email, password, phone } = req.body;
   try {
-    const user = await User.findOne({ phone });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: "Phone is not existing" });

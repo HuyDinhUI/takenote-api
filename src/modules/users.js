@@ -7,8 +7,6 @@ const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, default:null, unique: true },
     password: { type: String, default: null},
-    fullName: String,
-    phone: String,
     role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
   }, { timestamps: true });
 

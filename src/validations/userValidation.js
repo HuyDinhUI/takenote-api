@@ -4,9 +4,9 @@ import { StatusCodes } from "http-status-codes";
 const SignUp = async (req, res, next) => {
   const correctCondition = Joi.object({
     username:Joi.string().required().min(2).max(20).trim().strict(),
-    phone: Joi.string().required().min(10).max(11).trim().strict(),
+    email: Joi.string().required().trim().strict().email(),
     password: Joi.string().required().min(8).max(20).trim().strict(),
-    comfirmPassword: Joi.string().required().min(8).max(20).trim().strict()
+    confirmPassword: Joi.string().required().min(8).max(20).trim().strict()
   });
 
   try {
@@ -24,7 +24,7 @@ const SignUp = async (req, res, next) => {
 
 const Login = async (req, res, next) => {
   const correctCondition = Joi.object({
-    phone: Joi.string().required().min(10).max(11).trim().strict(),
+    email: Joi.string().required().trim().strict().email(),
     password: Joi.string().required().min(8).max(20).trim().strict()
   });
 
