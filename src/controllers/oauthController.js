@@ -8,7 +8,7 @@ export const OauthCallback = (req, res) => {
       email: user.email,
       username: user.username,
     },
-    process.env.JWT_SECRET,
+    process.env.ACCESS_TOKEN_SECRET_SIGNATURE,
     { expiresIn: "1d" }
   );
 
@@ -20,7 +20,7 @@ export const OauthCallback = (req, res) => {
   });
 
   
-  const redirectUrl = `${process.env.FRONTEND_URL}/account/Account Settings`;
+  const redirectUrl = `${process.env.FRONTEND_URL}`;
   res.redirect(redirectUrl);
 };
 
