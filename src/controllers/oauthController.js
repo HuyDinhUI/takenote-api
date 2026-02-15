@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import { JwtProvider } from "../providers/JwtProvider.js";
 export const OauthCallback = async (req, res) => {
   const user = {
@@ -18,6 +17,6 @@ export const OauthCallback = async (req, res) => {
     "14 days"
   );
 
-  const redirectUrl = `${process.env.FRONTEND_URL}/auth/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+  const redirectUrl = `${process.env.FRONTEND_URL}/callback?accessToken=${accessToken}&refreshToken=${refreshToken}`;
   res.redirect(redirectUrl);
 };

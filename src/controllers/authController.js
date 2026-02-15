@@ -51,7 +51,7 @@ const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Email is existing" });
+      return res.status(400).json({ message: "Email is not existing" });
     }
 
     const isMatchPassword = await bcrybt.compare(password, user.password);
@@ -70,13 +70,13 @@ const login = async (req, res) => {
     const accessToken = await JwtProvider.generateToken(
       userInfo,
       ACCESS_TOKEN_SECRET_SIGNATURE,
-      "5m"
+      "10m",
     );
 
     const refreshToken = await JwtProvider.generateToken(
       userInfo,
       REFRESH_TOKEN_SECRET_SIGNATURE,
-      "14 days"
+      "14 days",
     );
 
     // res.cookie("accessToken", accessToken, {
@@ -129,7 +129,7 @@ const logout = async (req, res) => {
 const refreshToken = async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    res.status(StatusCodes.UNAUTHORIZED).json({ message: "Please Login" });
+    res.status(StatusCodes.FORBIDDEN).json({ slug: "NO_REFRESH_TOKEN"});
   }
 
   const [type, token] = authHeader.split(" ");
@@ -143,24 +143,31 @@ const refreshToken = async (req, res) => {
   try {
     const refreshTokenDecoded = await JwtProvider.verifyToken(
       token,
-      REFRESH_TOKEN_SECRET_SIGNATURE
+      REFRESH_TOKEN_SECRET_SIGNATURE,
     );
     const user = {
       id: refreshTokenDecoded.id,
       username: refreshTokenDecoded.username,
       email: refreshTokenDecoded.email,
-      role: refreshTokenDecoded.role
-    }
+      role: refreshTokenDecoded.role,
+    };
 
     const accessToken = await JwtProvider.generateToken(
       user,
       ACCESS_TOKEN_SECRET_SIGNATURE,
-      "5m"
-    )
+      "5m",
+    );
 
-    res.status(StatusCodes.OK).json({ message: "Refresh Token API success" , accessToken});
+    res
+      .status(StatusCodes.OK)
+      .json({ message: "Refresh Token API success", accessToken });
   } catch (error) {
-    res.status(StatusCodes.UNAUTHORIZED).json({message: error.message});
+    if (error.message?.includes("jwt expired")) {
+      return res
+        .status(StatusCodes.FORBIDDEN)
+        .json({ slug: "REFRESH_TOKEN_EXPIRED" });
+    }
+    res.status(StatusCodes.UNAUTHORIZED).json({ message: error.message });
   }
 };
 
